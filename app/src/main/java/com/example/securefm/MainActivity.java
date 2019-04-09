@@ -45,11 +45,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        Intent intent;
+        switch (id) {
+            case R.id.action_settings:
+                intent = new Intent(this, ChooseHomeDirActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.action_change_password:
+                intent = new Intent(this, FirstSettingsActivity.class);
+                startActivity(intent);
+                return true;
+        }
+        /*if (id == R.id.action_settings) {
             Intent intent = new Intent(this, ChooseHomeDirActivity.class);
             startActivity(intent);
             return true;
-        }
+        }*/
         return super.onOptionsItemSelected(item);
     }
 

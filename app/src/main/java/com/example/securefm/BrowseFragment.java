@@ -43,6 +43,7 @@ public class BrowseFragment extends Fragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                browseTo(currentDirectory);
                 mSwipeRefreshLayout.setRefreshing(false);
             }
         });
@@ -81,8 +82,9 @@ public class BrowseFragment extends Fragment {
         } else {
             try {
                 //Intent i = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("file://" + aDirectory.getAbsolutePath()));
-                Intent i = new Intent(android.content.Intent.ACTION_VIEW, Uri.fromFile(aDirectory));
-                startActivity(i);
+                //Intent i = new Intent(android.content.Intent.ACTION_VIEW, Uri.fromFile(aDirectory));
+                //startActivity(i);
+                Toast.makeText(getActivity(), "Открывать мока можно только на <7 Android", Toast.LENGTH_SHORT).show();
             } catch (Exception ex) {
                 Log.e("Intent Eror", ex.getMessage());
             }
@@ -118,10 +120,12 @@ public class BrowseFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0){
-                            new Encription().encryptFile(file,
+                            new Encription().encryptFile(
+                                    file,
                                     password,
                                     getActivity().getSharedPreferences("PREFERENCE", Context.MODE_PRIVATE).getString("homeDir", "/storage"),
                                     getContext());
+                            browseTo(currentDirectory);
                             Toast.makeText(getActivity(), "Файл успешно зашифрован", Toast.LENGTH_SHORT).show();
                         } else if (which == 1){
                             file.delete();

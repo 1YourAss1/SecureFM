@@ -75,38 +75,66 @@ public class Encription extends AppCompatActivity {
 
     //Шифрование файла
     public void encryptFile(File file, String pass, String path, Context context) {
-            try {
-                FileInputStream fin = context.openFileInput("salt");
-                byte[] salt = new byte[fin.available()];
-                fin.read(salt);
-                fin.close();
+        try {
+            FileInputStream fin = context.openFileInput("salt");
+            byte[] salt = new byte[fin.available()];
+            fin.read(salt);
+            fin.close();
 
-                fin = context.openFileInput("IV");
-                byte[] IV = new byte[fin.available()];
-                fin.read(IV);
-                fin.close();
+            fin = context.openFileInput("IV");
+            byte[] IV = new byte[fin.available()];
+            fin.read(IV);
+            fin.close();
 
-                SecretKey secretKey = generateSecretKey(pass, salt);
+            SecretKey secretKey = generateSecretKey(pass, salt);
 
-                fin = new FileInputStream(file);
-                byte[] fileBytes = new byte[fin.available()];
-                fin.read(fileBytes);
-                fin.close();
+            fin = new FileInputStream(file);
+            byte[] fileBytes = new byte[fin.available()];
+            fin.read(fileBytes);
+            fin.close();
 
-                Security.addProvider(new BouncyCastleProvider());
-                //Cipher cipher = Cipher.getInstance("GOST-28147/CBC/PKCS7Padding", "SC");
-                Cipher cipher = Cipher.getInstance("GOST-281470/CBC/PKCS7Padding", "SC");
-                cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV));
-                byte[] encryptedFileBytes = cipher.doFinal(fileBytes);
-                FileOutputStream fos = new FileOutputStream(path + "/" + file.getName());
-                fos.write(encryptedFileBytes);
-                fos.close();
-            } catch (Exception ex) {
-                Log.e("Encryption eror", ex.getMessage());
-            }
-        //} else {
-        //}
+            Security.addProvider(new BouncyCastleProvider());
+            //Cipher cipher = Cipher.getInstance("GOST-28147/CBC/PKCS7Padding", "SC");
+            Cipher cipher = Cipher.getInstance("GOST-28147/CBC/PKCS7Padding", "SC");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV));
+            byte[] encryptedFileBytes = cipher.doFinal(fileBytes);
+            FileOutputStream fos = new FileOutputStream(path + "/" + file.getName() + "_encrypted");
+            fos.write(encryptedFileBytes);
+            fos.close();
+        } catch (Exception ex) {
+            Log.e("Encryption eror", ex.getMessage());
+        }
+    }
 
+    public void decryptFile(File file, String pass, String path, Context context) {
+        try {
+            FileInputStream fin = context.openFileInput("salt");
+            byte[] salt = new byte[fin.available()];
+            fin.read(salt);
+            fin.close();
+
+            fin = context.openFileInput("IV");
+            byte[] IV = new byte[fin.available()];
+            fin.read(IV);
+            fin.close();
+
+            SecretKey secretKey = generateSecretKey(pass, salt);
+
+            fin = new FileInputStream(file);
+            byte[] fileBytes = new byte[fin.available()];
+            fin.read(fileBytes);
+            fin.close();
+
+            Security.addProvider(new BouncyCastleProvider());
+            Cipher cipher = Cipher.getInstance("GOST-28147/CBC/PKCS7Padding", "SC");
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(IV));
+            byte[] encryptedFileBytes = cipher.doFinal(fileBytes);
+            FileOutputStream fos = new FileOutputStream(path + "/" + file.getName() + "_decrypted");
+            fos.write(encryptedFileBytes);
+            fos.close();
+        } catch (Exception ex) {
+            Log.e("Encryption eror", ex.getMessage());
+        }
     }
 
 }

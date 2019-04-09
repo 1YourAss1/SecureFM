@@ -6,6 +6,12 @@
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
-        android:title="Найстройки"
+        android:title="Изменить домашнюю папку"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_change_password"
+        android:orderInCategory="100"
+        android:title="Изменить пароль"
+        app:showAsAction="never" />
+
 </menu>

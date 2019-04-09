@@ -67,15 +67,20 @@ public class HomeFragment extends Fragment {
 
     //Диалог выбора действия над файлом
     public void openDialog(final File file) {
-        final String arr[] = {"Раcшифровать", "Удалить"};
+        final String arr[] = {"Разшифровать", "Удалить"};
         new AlertDialog.Builder(getActivity())
                 .setTitle("Выберите действие")
                 .setItems(arr, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0){
-                            //new Encryption().decryptFile(file, password, "/storage/emulated/0/decrypt");
-                            //Toast.makeText(getActivity(), "Файл успешно раcшифрован", Toast.LENGTH_SHORT).show();
+                            new Encription().decryptFile(
+                                    file,
+                                    password,
+                                    getActivity().getSharedPreferences("PREFERENCE", Context.MODE_PRIVATE).getString("homeDir", "/storage"),
+                                    getContext());
+                            fill(new File(getActivity().getSharedPreferences("PREFERENCE", Context.MODE_PRIVATE).getString("homeDir", "/storage")));
+                            Toast.makeText(getActivity(), "Файл успешно разшифрован", Toast.LENGTH_SHORT).show();
                         } else if (which == 1){
                             file.delete();
                             fill(new File(getActivity().getSharedPreferences("PREFERENCE", Context.MODE_PRIVATE).getString("homeDir", "/storage")));

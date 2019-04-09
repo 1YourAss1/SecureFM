@@ -5,11 +5,23 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/textViewAttention"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="150dp"
+        android:layout_marginRight="50dp"
+        android:text="Внимание! при изменении пароля вы не сможете расшифровать ранее зашифрованные другим паролем данные!"
+        android:textColor="@color/colorAttention"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Придумайте пароль для входа в приложение и шифрования файлов:"
         android:padding="20dp"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="50dp"
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"/>
 
