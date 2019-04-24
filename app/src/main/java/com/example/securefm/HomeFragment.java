@@ -74,13 +74,16 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0){
+                            long start = System.currentTimeMillis();
                             new Encription().decryptFile(
                                     file,
                                     password,
                                     getActivity().getSharedPreferences("PREFERENCE", Context.MODE_PRIVATE).getString("homeDir", "/storage"),
                                     getContext());
+                            long stop = System.currentTimeMillis();
+                            double time = Double.valueOf(stop - start)/1000;
                             fill(new File(getActivity().getSharedPreferences("PREFERENCE", Context.MODE_PRIVATE).getString("homeDir", "/storage")));
-                            Toast.makeText(getActivity(), "Файл успешно разшифрован", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "Файл успешно разшифрован за " + time + " с", Toast.LENGTH_SHORT).show();
                         } else if (which == 1){
                             file.delete();
                             fill(new File(getActivity().getSharedPreferences("PREFERENCE", Context.MODE_PRIVATE).getString("homeDir", "/storage")));
