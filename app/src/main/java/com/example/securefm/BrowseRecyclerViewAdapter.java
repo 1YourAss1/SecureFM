@@ -63,7 +63,7 @@ public class BrowseRecyclerViewAdapter extends RecyclerView.Adapter<BrowseRecycl
         TextView listItemNumView;
         ImageView imageView;
 
-        public ListViewHolder(View itemView) {
+        public ListViewHolder(final View itemView) {
             super(itemView);
             listItemNumView = itemView.findViewById(R.id.list);
             imageView = itemView.findViewById(R.id.image);

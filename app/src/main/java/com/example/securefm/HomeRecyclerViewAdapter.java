@@ -56,7 +56,7 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
         TextView listItemNumView;
         ImageView imageView;
 
-        public ListViewHolder(View itemView) {
+        public ListViewHolder(final View itemView) {
             super(itemView);
             listItemNumView = itemView.findViewById(R.id.list);
             imageView = itemView.findViewById(R.id.image);
@@ -64,7 +64,6 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
                 }
             });
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
