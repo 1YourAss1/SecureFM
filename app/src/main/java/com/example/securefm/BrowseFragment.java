@@ -2,11 +2,8 @@ package com.example.securefm;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,6 +18,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class BrowseFragment extends Fragment {
     private RecyclerView recyclerView;
@@ -86,7 +84,7 @@ public class BrowseFragment extends Fragment {
                 //startActivity(i);
                 Toast.makeText(getActivity(), "Открывать мока можно только на <7 Android", Toast.LENGTH_SHORT).show();
             } catch (Exception ex) {
-                Log.e("Intent Eror", ex.getMessage());
+                Log.e("Intent Error", ex.getMessage());
             }
         }
     }

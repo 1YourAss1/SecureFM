@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
         Intent intent;
         switch (id) {
-            case R.id.action_settings:
+            case R.id.action_change_home_dir:
                 intent = new Intent(this, ChooseHomeDirActivity.class);
                 startActivity(intent);
                 return true;
@@ -55,12 +55,11 @@ public class MainActivity extends AppCompatActivity {
                 intent = new Intent(this, FirstSettingsActivity.class);
                 startActivity(intent);
                 return true;
+            case R.id.action_settings:
+                intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                return true;
         }
-        /*if (id == R.id.action_settings) {
-            Intent intent = new Intent(this, ChooseHomeDirActivity.class);
-            startActivity(intent);
-            return true;
-        }*/
         return super.onOptionsItemSelected(item);
     }
 

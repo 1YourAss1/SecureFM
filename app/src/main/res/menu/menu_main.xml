@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.tab.MainActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_change_home_dir"
         android:orderInCategory="100"
         android:title="Изменить домашнюю папку"
         app:showAsAction="never" />
@@ -12,6 +12,11 @@
         android:id="@+id/action_change_password"
         android:orderInCategory="100"
         android:title="Изменить пароль"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="Настройки"
         app:showAsAction="never" />
 
 </menu>

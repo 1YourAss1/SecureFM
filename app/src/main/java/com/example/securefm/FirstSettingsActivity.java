@@ -24,6 +24,7 @@ public class FirstSettingsActivity extends AppCompatActivity {
         editPass = findViewById(R.id.editPassword);
         editRetryPass = findViewById(R.id.editRetryPassword);
         textViewAttention = findViewById(R.id.textViewAttention);
+        getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit().putString("algorithm", "GOST-28147").commit();
         isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getBoolean("isFirstRun", true);
         if (isFirstRun) {
             textViewAttention.setText("");
@@ -42,9 +43,13 @@ public class FirstSettingsActivity extends AppCompatActivity {
                 FileOutputStream fos = openFileOutput("salt", Context.MODE_PRIVATE);
                 fos.write(new Encription().generateSalt());
                 fos.close();
-                //Создание и сохранение IV
-                fos = openFileOutput("IV", Context.MODE_PRIVATE);
-                fos.write(new Encription().generateIv());
+                //Создание и сохранение IV для ГОСТ 28147-89
+                fos = openFileOutput("IV8", Context.MODE_PRIVATE);
+                fos.write(new Encription().generateIv8());
+                fos.close();
+                //Создание и сохранение IV для ГОСТ Р 34.12-2015
+                fos = openFileOutput("IV16", Context.MODE_PRIVATE);
+                fos.write(new Encription().generateIv16());
                 fos.close();
 
 

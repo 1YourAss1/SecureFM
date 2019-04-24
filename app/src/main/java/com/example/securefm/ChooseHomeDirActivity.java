@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -51,6 +52,7 @@ public class ChooseHomeDirActivity extends AppCompatActivity {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                browseTo(currentDirectory);
                 mSwipeRefreshLayout.setRefreshing(false);
             }
         });
@@ -61,7 +63,8 @@ public class ChooseHomeDirActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.rv);
         textDir = findViewById(R.id.textDir);
 
-        int permissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int permissionStatus = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permissionStatus == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this,
                     PERMISSIONS_STORAGE,
@@ -91,6 +94,7 @@ public class ChooseHomeDirActivity extends AppCompatActivity {
                                     dir.mkdirs();
                                     browseTo(currentDirectory);
                                 } catch (Exception ex) {
+                                    Log.e("Make Directory", ex.getMessage());
                                     Toast.makeText(ChooseHomeDirActivity.this, ex.getMessage(), Toast.LENGTH_LONG).show();
                                 }
                             }

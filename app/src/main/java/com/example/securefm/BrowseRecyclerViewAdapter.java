@@ -46,7 +46,7 @@ public class BrowseRecyclerViewAdapter extends RecyclerView.Adapter<BrowseRecycl
                 holder.imageView.setImageResource(R.drawable.ic_sd_storage_24dp);
             }
         } else if (directoryEntries.get(position).equals("..")) {
-            holder.imageView.setImageResource(R.drawable.ic_folder_open_24dp);
+            holder.imageView.setImageResource(R.drawable.ic_arrow_back_24dp);
         } else if (new File(directoryEntries.get(position)).isFile()){
             holder.imageView.setImageResource(R.drawable.ic_insert_drive_file_24dp);
         } else if (new File(directoryEntries.get(position)).isDirectory()){

@@ -67,7 +67,7 @@ public class HomeFragment extends Fragment {
 
     //Диалог выбора действия над файлом
     public void openDialog(final File file) {
-        final String arr[] = {"Разшифровать", "Удалить"};
+        final String arr[] = {"Раcшифровать", "Удалить"};
         new AlertDialog.Builder(getActivity())
                 .setTitle("Выберите действие")
                 .setItems(arr, new DialogInterface.OnClickListener() {

@@ -1,21 +1,15 @@
 package com.example.securefm;
 
 import android.content.Context;
-import android.content.ContextWrapper;
-import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Toast;
 
-import org.spongycastle.crypto.digests.GOST3411_2012_256Digest;
-import org.spongycastle.jce.provider.BouncyCastleProvider;
-
+import org.bouncycastle.crypto.digests.GOST3411_2012_256Digest;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.lang.reflect.Modifier;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.security.Security;
@@ -28,9 +22,11 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class Encription extends AppCompatActivity {
-    private Context context;
-
-
+    static {
+        BouncyCastleProvider bouncyCastleProvider = new BouncyCastleProvider();
+        Security.removeProvider(bouncyCastleProvider.getName());
+        Security.addProvider(bouncyCastleProvider);
+    }
     //Хэш от пароля
     public BigInteger GetDigest(byte[] pass){
         GOST3411_2012_256Digest gost3411_2012_256Digest = new GOST3411_2012_256Digest();
@@ -49,9 +45,16 @@ public class Encription extends AppCompatActivity {
     }
 
     //Генерация вектора инициализации для ГОСТ28147 размером 8 байт (для AES - 16 байт)
-    public byte[] generateIv(){
+    public byte[] generateIv8(){
         SecureRandom ivRandom = new SecureRandom();
         byte[] iv = new byte[8];
+        ivRandom.nextBytes(iv);
+        return iv;
+    }
+    //Генерация вектора инициализации для ГОСТ28147 размером 16 байт
+    public byte[] generateIv16(){
+        SecureRandom ivRandom = new SecureRandom();
+        byte[] iv = new byte[16];
         ivRandom.nextBytes(iv);
         return iv;
     }
@@ -65,7 +68,6 @@ public class Encription extends AppCompatActivity {
             SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             byte[] keyBytes = secretKeyFactory.generateSecret(pbKeySpec).getEncoded();
             Security.addProvider(new BouncyCastleProvider());
-            //keySpec = new SecretKeySpec(keyBytes, "GOST3412");
             keySpec = new SecretKeySpec(keyBytes, "GOST-28147");
         } catch (Exception ex) {
             Log.e("Key generation", ex.getMessage());
@@ -75,15 +77,21 @@ public class Encription extends AppCompatActivity {
 
     //Шифрование файла
     public void encryptFile(File file, String pass, String path, Context context) {
+        String algorithm = context.getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("algorithm", "GOST-28147");
         try {
             FileInputStream fin = context.openFileInput("salt");
             byte[] salt = new byte[fin.available()];
             fin.read(salt);
             fin.close();
 
-            fin = context.openFileInput("IV");
-            byte[] IV = new byte[fin.available()];
-            fin.read(IV);
+            fin = context.openFileInput("IV8");
+            byte[] IV8 = new byte[fin.available()];
+            fin.read(IV8);
+            fin.close();
+
+            fin = context.openFileInput("IV16");
+            byte[] IV16 = new byte[fin.available()];
+            fin.read(IV16);
             fin.close();
 
             SecretKey secretKey = generateSecretKey(pass, salt);
@@ -93,12 +101,14 @@ public class Encription extends AppCompatActivity {
             fin.read(fileBytes);
             fin.close();
 
-            Security.addProvider(new BouncyCastleProvider());
-            //Cipher cipher = Cipher.getInstance("GOST-28147/CBC/PKCS7Padding", "SC");
-            Cipher cipher = Cipher.getInstance("GOST-28147/CBC/PKCS7Padding", "SC");
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV));
+            Cipher cipher = Cipher.getInstance(algorithm + "/CBC/PKCS7Padding", "BC");
+            if (algorithm.equals("GOST-28147")) {
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV8));
+            } else if (algorithm.equals("GOST3412-2015")){
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV16));
+            }
             byte[] encryptedFileBytes = cipher.doFinal(fileBytes);
-            FileOutputStream fos = new FileOutputStream(path + "/" + file.getName() + "_encrypted");
+            FileOutputStream fos = new FileOutputStream(path + "/" + file.getName() + "_encrypted" + algorithm);
             fos.write(encryptedFileBytes);
             fos.close();
         } catch (Exception ex) {
@@ -107,15 +117,21 @@ public class Encription extends AppCompatActivity {
     }
 
     public void decryptFile(File file, String pass, String path, Context context) {
+        String algorithm = context.getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("algorithm", "GOST-28147");
         try {
             FileInputStream fin = context.openFileInput("salt");
             byte[] salt = new byte[fin.available()];
             fin.read(salt);
             fin.close();
 
-            fin = context.openFileInput("IV");
-            byte[] IV = new byte[fin.available()];
-            fin.read(IV);
+            fin = context.openFileInput("IV8");
+            byte[] IV8 = new byte[fin.available()];
+            fin.read(IV8);
+            fin.close();
+
+            fin = context.openFileInput("IV16");
+            byte[] IV16 = new byte[fin.available()];
+            fin.read(IV16);
             fin.close();
 
             SecretKey secretKey = generateSecretKey(pass, salt);
@@ -126,14 +142,18 @@ public class Encription extends AppCompatActivity {
             fin.close();
 
             Security.addProvider(new BouncyCastleProvider());
-            Cipher cipher = Cipher.getInstance("GOST-28147/CBC/PKCS7Padding", "SC");
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(IV));
+            Cipher cipher = Cipher.getInstance(algorithm + "/CBC/PKCS7Padding", "BC");
+            if (algorithm.equals("GOST-28147")) {
+                cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(IV8));
+            } else if (algorithm.equals("GOST3412-2015")){
+                cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(IV16));
+            }
             byte[] encryptedFileBytes = cipher.doFinal(fileBytes);
             FileOutputStream fos = new FileOutputStream(path + "/" + file.getName() + "_decrypted");
             fos.write(encryptedFileBytes);
             fos.close();
         } catch (Exception ex) {
-            Log.e("Encryption eror", ex.getMessage());
+            Log.e("Encryption error", ex.getMessage());
         }
     }
 
