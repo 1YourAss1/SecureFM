@@ -1,6 +1,7 @@
 package com.example.securefm;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -22,6 +23,8 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class Encription extends AppCompatActivity {
+    TimerDataBaseHelper timerDataBaseHelper;
+    SQLiteDatabase db;
     static {
         BouncyCastleProvider bouncyCastleProvider = new BouncyCastleProvider();
         Security.removeProvider(bouncyCastleProvider.getName());
@@ -60,7 +63,7 @@ public class Encription extends AppCompatActivity {
     }
 
     //Генерация ключа на основе пользовательского пароля
-    public SecretKey generateSecretKey(String passwordString, byte[] salt) {
+    public SecretKey generateSecretKey(String passwordString, byte[] salt, String algorithm) {
         SecretKeySpec keySpec = null;
         try {
             char[] passwordChar = passwordString.toCharArray();
@@ -68,7 +71,7 @@ public class Encription extends AppCompatActivity {
             SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             byte[] keyBytes = secretKeyFactory.generateSecret(pbKeySpec).getEncoded();
             Security.addProvider(new BouncyCastleProvider());
-            keySpec = new SecretKeySpec(keyBytes, "GOST-28147");
+            keySpec = new SecretKeySpec(keyBytes, algorithm);
         } catch (Exception ex) {
             Log.e("Key generation", ex.getMessage());
         }
@@ -94,7 +97,7 @@ public class Encription extends AppCompatActivity {
             fin.read(IV16);
             fin.close();
 
-            SecretKey secretKey = generateSecretKey(pass, salt);
+            SecretKey secretKey = generateSecretKey(pass, salt, algorithm);
 
             fin = new FileInputStream(file);
             byte[] fileBytes = new byte[fin.available()];
@@ -107,12 +110,21 @@ public class Encription extends AppCompatActivity {
             } else if (algorithm.equals("GOST3412-2015")){
                 cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV16));
             }
+
+
+            long start = System.currentTimeMillis();
             byte[] encryptedFileBytes = cipher.doFinal(fileBytes);
+            long stop = System.currentTimeMillis();
+
+            timerDataBaseHelper = new TimerDataBaseHelper(context);
+            db = timerDataBaseHelper.getWritableDatabase();
+            timerDataBaseHelper.insertTime(db, file.getAbsolutePath(), (int)file.length(), "ENCRYPTION", algorithm, (int)(stop - start));
+
             FileOutputStream fos = new FileOutputStream(path + "/" + file.getName() + "_encrypted" + algorithm);
             fos.write(encryptedFileBytes);
             fos.close();
         } catch (Exception ex) {
-            Log.e("Encryption eror", ex.getMessage());
+            Log.e("Encryption error", ex.getMessage());
         }
     }
 
@@ -134,21 +146,28 @@ public class Encription extends AppCompatActivity {
             fin.read(IV16);
             fin.close();
 
-            SecretKey secretKey = generateSecretKey(pass, salt);
+            SecretKey secretKey = generateSecretKey(pass, salt, algorithm);
 
             fin = new FileInputStream(file);
             byte[] fileBytes = new byte[fin.available()];
             fin.read(fileBytes);
             fin.close();
 
-            Security.addProvider(new BouncyCastleProvider());
             Cipher cipher = Cipher.getInstance(algorithm + "/CBC/PKCS7Padding", "BC");
             if (algorithm.equals("GOST-28147")) {
                 cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(IV8));
             } else if (algorithm.equals("GOST3412-2015")){
                 cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(IV16));
             }
+
+            long start = System.currentTimeMillis();
             byte[] encryptedFileBytes = cipher.doFinal(fileBytes);
+            long stop = System.currentTimeMillis();
+
+            timerDataBaseHelper = new TimerDataBaseHelper(context);
+            db = timerDataBaseHelper.getWritableDatabase();
+            timerDataBaseHelper.insertTime(db, file.getAbsolutePath(), (int)file.length(), "DECRYPTION", algorithm, (int)(stop - start));
+
             FileOutputStream fos = new FileOutputStream(path + "/" + file.getName() + "_decrypted");
             fos.write(encryptedFileBytes);
             fos.close();
