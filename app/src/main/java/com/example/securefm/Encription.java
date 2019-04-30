@@ -110,29 +110,32 @@ public class Encription extends AppCompatActivity {
             SecretKey secretKey = generateSecretKey(pass, salt, algorithm);
 
             fin = new FileInputStream(file);
-            byte[] fileBytes = new byte[fin.available()];
-            fin.read(fileBytes);
-            fin.close();
+            FileOutputStream fos = new FileOutputStream(path + "/" + file.getName() + "_encrypted" + algorithm);
+
 
             Cipher cipher = Cipher.getInstance(algorithm + "/CBC/PKCS7Padding", "BC");
-            //Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding", "BC");
             if (algorithm.equals("GOST-28147")) {
                 cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV8));
             } else if (algorithm.equals("GOST3412-2015")){
                 cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV16));
             }
 
+            CipherOutputStream cos = new CipherOutputStream(fos, cipher);
+            int  b;
+            byte[] d = new byte[1024*1024];
             long start = System.currentTimeMillis();
-            byte[] encryptedFileBytes = cipher.doFinal(fileBytes);
+            while ((b = fin.read(d)) != -1) {
+                cos.write(d, 0, b);
+            }
+            cos.flush();
+            cos.close();
+            fin.close();
             long stop = System.currentTimeMillis();
 
             timerDataBaseHelper = new TimerDataBaseHelper(context);
             db = timerDataBaseHelper.getWritableDatabase();
             timerDataBaseHelper.insertTime(db, file.getAbsolutePath(), (int)file.length(), "ENCRYPTION", algorithm, (int)(stop - start));
 
-            FileOutputStream fos = new FileOutputStream(path + "/" + file.getName() + "_encrypted" + algorithm);
-            fos.write(encryptedFileBytes);
-            fos.close();
         } catch (Exception ex) {
             Log.e("Encryption error", ex.getMessage());
         }
