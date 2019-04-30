@@ -128,7 +128,7 @@ public class BrowseFragment extends Fragment {
                             double time = Double.valueOf(stop - start)/1000;
                             browseTo(currentDirectory);
                             Toast.makeText(getActivity(), "Файл успешно зашифрован за " + time + " с", Toast.LENGTH_SHORT).show();
-                            Log.i("Encryption Time for " + file.getName(), String.valueOf(stop - start) + "ms");
+                            Log.i("Encryption Time for " + file.getName(), String.valueOf(stop - start) + " ms");
                         } else if (which == 1){
                             file.delete();
                             browseTo(currentDirectory);

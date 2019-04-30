@@ -6,16 +6,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import org.bouncycastle.crypto.digests.GOST3411_2012_256Digest;
+import org.bouncycastle.crypto.engines.GOST28147Engine;
+import org.bouncycastle.crypto.engines.GOST3412_2015Engine;
+import org.bouncycastle.crypto.modes.CBCBlockCipher;
+import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
+import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.security.Security;
+import java.util.Random;
 
 import javax.crypto.Cipher;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
@@ -71,6 +81,7 @@ public class Encription extends AppCompatActivity {
             SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             byte[] keyBytes = secretKeyFactory.generateSecret(pbKeySpec).getEncoded();
             Security.addProvider(new BouncyCastleProvider());
+            //keySpec = new SecretKeySpec(keyBytes, algorithm);
             keySpec = new SecretKeySpec(keyBytes, algorithm);
         } catch (Exception ex) {
             Log.e("Key generation", ex.getMessage());
@@ -105,12 +116,12 @@ public class Encription extends AppCompatActivity {
             fin.close();
 
             Cipher cipher = Cipher.getInstance(algorithm + "/CBC/PKCS7Padding", "BC");
+            //Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding", "BC");
             if (algorithm.equals("GOST-28147")) {
                 cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV8));
             } else if (algorithm.equals("GOST3412-2015")){
                 cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV16));
             }
-
 
             long start = System.currentTimeMillis();
             byte[] encryptedFileBytes = cipher.doFinal(fileBytes);
