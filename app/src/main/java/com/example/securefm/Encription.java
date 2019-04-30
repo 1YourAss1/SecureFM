@@ -81,7 +81,6 @@ public class Encription extends AppCompatActivity {
             SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             byte[] keyBytes = secretKeyFactory.generateSecret(pbKeySpec).getEncoded();
             Security.addProvider(new BouncyCastleProvider());
-            //keySpec = new SecretKeySpec(keyBytes, algorithm);
             keySpec = new SecretKeySpec(keyBytes, algorithm);
         } catch (Exception ex) {
             Log.e("Key generation", ex.getMessage());
