@@ -1,9 +1,14 @@
 package com.example.securefm;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -118,17 +123,22 @@ public class BrowseFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0){
-                            long start = System.currentTimeMillis();
+                            try {
+                            new EncryptTask().execute(file);
+                            } catch (Exception ex) {
+                                Log.e("AsynTask Error", ex.getMessage());
+                            }
+                            /*long start = System.currentTimeMillis();
                             new Encription().encryptFile(
                                     file,
                                     password,
                                     getActivity().getSharedPreferences("PREFERENCE", Context.MODE_PRIVATE).getString("homeDir", "/storage"),
                                     getContext());
                             long stop = System.currentTimeMillis();
-                            double time = Double.valueOf(stop - start)/1000;
-                            browseTo(currentDirectory);
-                            Toast.makeText(getActivity(), "Файл успешно зашифрован за " + time + " с", Toast.LENGTH_SHORT).show();
-                            Log.i("Encryption Time for " + file.getName(), String.valueOf(stop - start) + " ms");
+                            double time = Double.valueOf(stop - start)/1000;*/
+                            //browseTo(currentDirectory);
+                            //Toast.makeText(getActivity(), "Файл успешно зашифрован за " + time + " с", Toast.LENGTH_SHORT).show();
+                            //Log.i("Encryption Time for " + file.getName(), String.valueOf(stop - start) + " ms");
                         } else if (which == 1){
                             file.delete();
                             browseTo(currentDirectory);
@@ -137,6 +147,40 @@ public class BrowseFragment extends Fragment {
                     }
                 })
                 .show();
+    }
+
+    class EncryptTask extends AsyncTask<File, Void, Double> {
+
+        @Override
+        protected void onPreExecute() {
+            Toast.makeText(getContext(), "Шифрование началось", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected Double doInBackground(File... files) {
+            long start = System.currentTimeMillis();
+            /*new Encription().encryptFile(
+                    files[0],
+                    password,
+                    getActivity().getSharedPreferences("PREFERENCE", Context.MODE_PRIVATE).getString("homeDir", "/storage"),
+                    getContext());*/
+            long stop = System.currentTimeMillis();
+            double time = Double.valueOf(stop - start)/1000;
+            return time;
+        }
+
+        @Override
+        protected void onPostExecute(Double result) {
+            NotificationCompat.Builder notificationCompat = new NotificationCompat.Builder(getContext())
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentTitle("Шифрование завершено")
+                    .setContentText("Файл зашифрован за " + result + " с");
+
+            Notification notification = notificationCompat.build();
+
+            NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(1, notification);
+        }
     }
 
 }
