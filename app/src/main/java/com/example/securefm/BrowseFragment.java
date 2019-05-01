@@ -174,7 +174,6 @@ public class BrowseFragment extends Fragment {
         protected void onPostExecute(Object[] result) {
             Double time = (Double) result[0];
             String fileName = (String) result[1];
-            Toast.makeText(getContext(), "Файл" + fileName + "зашифрован за " + time + " с", Toast.LENGTH_SHORT).show();
             NotificationCompat.Builder notificationCompat = new NotificationCompat.Builder(getContext())
                     .setSmallIcon(R.mipmap.ic_launcher)
                     .setContentTitle("Шифрование завершено")
