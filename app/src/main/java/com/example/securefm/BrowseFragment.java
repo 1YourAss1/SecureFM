@@ -124,7 +124,7 @@ public class BrowseFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0){
                             try {
-                            new EncryptTask().execute(file);
+                            new EncryptTask().execute(file, new Encription(getContext()));
                             } catch (Exception ex) {
                                 Log.e("AsynTask Error", ex.getMessage());
                             }
@@ -149,7 +149,7 @@ public class BrowseFragment extends Fragment {
                 .show();
     }
 
-    class EncryptTask extends AsyncTask<File, Void, Double> {
+    class EncryptTask extends AsyncTask<Object, Void, Object[]> {
 
         @Override
         protected void onPreExecute() {
@@ -157,24 +157,28 @@ public class BrowseFragment extends Fragment {
         }
 
         @Override
-        protected Double doInBackground(File... files) {
+        protected Object[] doInBackground(Object... args) {
+            File file = (File)args[0];
+            Encription encription = (Encription)args[1];
             long start = System.currentTimeMillis();
-            /*new Encription().encryptFile(
-                    files[0],
-                    password,
-                    getActivity().getSharedPreferences("PREFERENCE", Context.MODE_PRIVATE).getString("homeDir", "/storage"),
-                    getContext());*/
+            encription.encryptFile(file, password);
             long stop = System.currentTimeMillis();
             double time = Double.valueOf(stop - start)/1000;
-            return time;
+            Object[] arr = new Object[2];
+            arr[0] = time;
+            arr[1] = file.getName();
+            return arr;
         }
 
         @Override
-        protected void onPostExecute(Double result) {
+        protected void onPostExecute(Object[] result) {
+            Double time = (Double) result[0];
+            String fileName = (String) result[1];
+            Toast.makeText(getContext(), "Файл" + fileName + "зашифрован за " + time + " с", Toast.LENGTH_SHORT).show();
             NotificationCompat.Builder notificationCompat = new NotificationCompat.Builder(getContext())
                     .setSmallIcon(R.mipmap.ic_launcher)
                     .setContentTitle("Шифрование завершено")
-                    .setContentText("Файл зашифрован за " + result + " с");
+                    .setContentText("Файл " + fileName + " зашифрован за " + time + " с");
 
             Notification notification = notificationCompat.build();
 

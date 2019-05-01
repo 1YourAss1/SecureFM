@@ -77,11 +77,9 @@ public class HomeFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0){
                             long start = System.currentTimeMillis();
-                            new Encription().decryptFile(
+                            new Encription(getContext()).decryptFile(
                                     file,
-                                    password,
-                                    getActivity().getSharedPreferences("PREFERENCE", Context.MODE_PRIVATE).getString("homeDir", "/storage"),
-                                    getContext());
+                                    password);
                             long stop = System.currentTimeMillis();
                             double time = Double.valueOf(stop - start)/1000;
                             fill(new File(getActivity().getSharedPreferences("PREFERENCE", Context.MODE_PRIVATE).getString("homeDir", "/storage")));

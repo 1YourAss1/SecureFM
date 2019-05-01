@@ -27,7 +27,7 @@ public class LoginActivity extends AppCompatActivity {
         EditText passText = findViewById(R.id.passText);
         String digest = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("hashPass", "");
         //Проверка пароля по хешу
-        if (digest.equals(new Encription().GetDigest(passText.getText().toString().getBytes()).toString())) {
+        if (digest.equals(new Encription(getApplicationContext()).GetDigest(passText.getText().toString().getBytes()).toString())) {
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra("PASSWORD", passText.getText().toString());
             startActivity(intent);

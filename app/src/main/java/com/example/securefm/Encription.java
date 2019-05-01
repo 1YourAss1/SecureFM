@@ -33,6 +33,11 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class Encription extends AppCompatActivity {
+    private Context context;
+    Encription(Context context) {
+        this.context = context;
+    }
+
     TimerDataBaseHelper timerDataBaseHelper;
     SQLiteDatabase db;
     static {
@@ -40,6 +45,7 @@ public class Encription extends AppCompatActivity {
         Security.removeProvider(bouncyCastleProvider.getName());
         Security.addProvider(bouncyCastleProvider);
     }
+
     //Хэш от пароля
     public BigInteger GetDigest(byte[] pass){
         GOST3411_2012_256Digest gost3411_2012_256Digest = new GOST3411_2012_256Digest();
@@ -89,8 +95,9 @@ public class Encription extends AppCompatActivity {
     }
 
     //Шифрование файла
-    public void encryptFile(File file, String pass, String path, Context context) {
+    public void encryptFile(File file, String pass) {
         String algorithm = context.getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("algorithm", "GOST-28147");
+        String path = context.getSharedPreferences("PREFERENCE", Context.MODE_PRIVATE).getString("homeDir", "/storage");
         try {
             FileInputStream fin = context.openFileInput("salt");
             byte[] salt = new byte[fin.available()];
@@ -141,8 +148,9 @@ public class Encription extends AppCompatActivity {
         }
     }
 
-    public void decryptFile(File file, String pass, String path, Context context) {
+    public void decryptFile(File file, String pass) {
         String algorithm = context.getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("algorithm", "GOST-28147");
+        String path = context.getSharedPreferences("PREFERENCE", Context.MODE_PRIVATE).getString("homeDir", "/storage");
         try {
             FileInputStream fin = context.openFileInput("salt");
             byte[] salt = new byte[fin.available()];

@@ -37,19 +37,19 @@ public class FirstSettingsActivity extends AppCompatActivity {
             try {
                 //Создание и сохранения хеша в SharedPreferences
                 byte[] pass = editPass.getText().toString().getBytes();
-                getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit().putString("hashPass", new Encription().GetDigest(pass).toString()).commit();
+                getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit().putString("hashPass", new Encription(getApplicationContext()).GetDigest(pass).toString()).commit();
 
                 //Создание и сохранение соли
                 FileOutputStream fos = openFileOutput("salt", Context.MODE_PRIVATE);
-                fos.write(new Encription().generateSalt());
+                fos.write(new Encription(getApplicationContext()).generateSalt());
                 fos.close();
                 //Создание и сохранение IV для ГОСТ 28147-89
                 fos = openFileOutput("IV8", Context.MODE_PRIVATE);
-                fos.write(new Encription().generateIv8());
+                fos.write(new Encription(getApplicationContext()).generateIv8());
                 fos.close();
                 //Создание и сохранение IV для ГОСТ Р 34.12-2015
                 fos = openFileOutput("IV16", Context.MODE_PRIVATE);
-                fos.write(new Encription().generateIv16());
+                fos.write(new Encription(getApplicationContext()).generateIv16());
                 fos.close();
 
 
