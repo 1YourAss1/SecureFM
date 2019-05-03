@@ -187,6 +187,8 @@ public class BrowseFragment extends Fragment {
 
             NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(1, notification);
+
+            Log.i("Encryption time", file.getName() + " (" + file.length() + " б)" + time + " мс");
         }
     }
 
