@@ -166,20 +166,24 @@ public class BrowseFragment extends Fragment {
             double time = Double.valueOf(stop - start)/1000;
             Object[] arr = new Object[2];
             arr[0] = time;
-            arr[1] = file.getName();
+            arr[1] = file;
             return arr;
         }
 
         @Override
         protected void onPostExecute(Object[] result) {
             Double time = (Double) result[0];
-            String fileName = (String) result[1];
-            NotificationCompat.Builder notificationCompat = new NotificationCompat.Builder(getContext())
+            File file = (File) result[1];
+            String bigText = "Файл " + file.getName() + " (" + file.length() +" б) зашифрован за " + time + " с";
+            Toast.makeText(getContext(),
+                    bigText,
+                    Toast.LENGTH_SHORT).show();
+            Notification.Builder builder = new Notification.Builder(getContext())
                     .setSmallIcon(R.mipmap.ic_launcher)
                     .setContentTitle("Шифрование завершено")
-                    .setContentText("Файл " + fileName + " зашифрован за " + time + " с");
+                    .setContentText(bigText);
 
-            Notification notification = notificationCompat.build();
+            Notification notification = new Notification.BigTextStyle(builder).bigText(bigText).build();
 
             NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(1, notification);
