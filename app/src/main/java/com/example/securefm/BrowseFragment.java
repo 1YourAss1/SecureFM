@@ -149,7 +149,7 @@ public class BrowseFragment extends Fragment {
                 .show();
     }
 
-    class EncryptTask extends AsyncTask<Object, Void, Object[]> {
+    /*class EncryptTask extends AsyncTask<Object, Void, Object[]> {
 
         @Override
         protected void onPreExecute() {
@@ -188,8 +188,25 @@ public class BrowseFragment extends Fragment {
             NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(1, notification);
 
-            Log.i("Encryption time", file.getName() + " (" + file.length() + " б)" + time + " мс");
+            Log.i("Encryption time", file.getName() + " (" + file.length() + " б) - " + time + " с");
         }
+    }*/
+
+    class EncryptTask extends AsyncTask<Object, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            Toast.makeText(getContext(), "Шифрование началось", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected Void doInBackground(Object... args) {
+            File file = (File)args[0];
+            Encription encription = (Encription)args[1];
+            encription.encryptFile(file, password);
+            return null;
+        }
+
     }
 
 }

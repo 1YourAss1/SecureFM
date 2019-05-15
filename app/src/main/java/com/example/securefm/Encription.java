@@ -63,7 +63,7 @@ public class Encription extends AppCompatActivity {
         return salt;
     }
 
-    //Генерация вектора инициализации для ГОСТ28147 размером 8 байт (для AES - 16 байт)
+    //Генерация вектора инициализации для ГОСТ28147 размером 8 байт
     public byte[] generateIv8(){
         SecureRandom ivRandom = new SecureRandom();
         byte[] iv = new byte[8];
@@ -119,7 +119,6 @@ public class Encription extends AppCompatActivity {
             fin = new FileInputStream(file);
             FileOutputStream fos = new FileOutputStream(path + "/" + file.getName() + "_encrypted" + algorithm);
 
-
             Cipher cipher = Cipher.getInstance(algorithm + "/CBC/PKCS7Padding", "BC");
             if (algorithm.equals("GOST-28147")) {
                 cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV8));
@@ -129,7 +128,7 @@ public class Encription extends AppCompatActivity {
 
             CipherOutputStream cos = new CipherOutputStream(fos, cipher);
             int  b;
-            byte[] d = new byte[1024*1024];
+            byte[] d = new byte[128*1024];
             long start = System.currentTimeMillis();
             while ((b = fin.read(d)) != -1) {
                 cos.write(d, 0, b);
@@ -141,8 +140,7 @@ public class Encription extends AppCompatActivity {
 
             timerDataBaseHelper = new TimerDataBaseHelper(context);
             db = timerDataBaseHelper.getWritableDatabase();
-            timerDataBaseHelper.insertTime(db, file.getAbsolutePath(), (int)file.length(), "ENCRYPTION", algorithm, (int)(stop - start));
-
+            timerDataBaseHelper.insertTime(db, file.getName(), (int)file.length(), "ENCRYPTION", algorithm, (int)(stop - start));
         } catch (Exception ex) {
             Log.e("Encryption error", ex.getMessage());
         }
@@ -170,9 +168,7 @@ public class Encription extends AppCompatActivity {
             SecretKey secretKey = generateSecretKey(pass, salt, algorithm);
 
             fin = new FileInputStream(file);
-            byte[] fileBytes = new byte[fin.available()];
-            fin.read(fileBytes);
-            fin.close();
+            FileOutputStream fos = new FileOutputStream(path + "/" + file.getName() + "_decrypted" + algorithm);
 
             Cipher cipher = Cipher.getInstance(algorithm + "/CBC/PKCS7Padding", "BC");
             if (algorithm.equals("GOST-28147")) {
@@ -181,20 +177,23 @@ public class Encription extends AppCompatActivity {
                 cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(IV16));
             }
 
+            CipherOutputStream cos = new CipherOutputStream(fos, cipher);
+            int  b;
+            byte[] d = new byte[128*1024];
             long start = System.currentTimeMillis();
-            byte[] encryptedFileBytes = cipher.doFinal(fileBytes);
+            while ((b = fin.read(d)) != -1) {
+                cos.write(d, 0, b);
+            }
+            cos.flush();
+            cos.close();
+            fin.close();
             long stop = System.currentTimeMillis();
 
             timerDataBaseHelper = new TimerDataBaseHelper(context);
             db = timerDataBaseHelper.getWritableDatabase();
-            timerDataBaseHelper.insertTime(db, file.getAbsolutePath(), (int)file.length(), "DECRYPTION", algorithm, (int)(stop - start));
-
-            FileOutputStream fos = new FileOutputStream(path + "/" + file.getName() + "_decrypted");
-            fos.write(encryptedFileBytes);
-            fos.close();
+            timerDataBaseHelper.insertTime(db, file.getName(), (int)file.length(), "DECRYPTION", algorithm, (int)(stop - start));
         } catch (Exception ex) {
             Log.e("Encryption error", ex.getMessage());
         }
     }
-
 }
