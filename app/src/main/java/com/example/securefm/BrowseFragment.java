@@ -149,7 +149,7 @@ public class BrowseFragment extends Fragment {
                 .show();
     }
 
-    /*class EncryptTask extends AsyncTask<Object, Void, Object[]> {
+    class EncryptTask extends AsyncTask<Object, Void, Object[]> {
 
         @Override
         protected void onPreExecute() {
@@ -178,21 +178,11 @@ public class BrowseFragment extends Fragment {
             Toast.makeText(getContext(),
                     bigText,
                     Toast.LENGTH_SHORT).show();
-            Notification.Builder builder = new Notification.Builder(getContext())
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentTitle("Шифрование завершено")
-                    .setContentText(bigText);
-
-            Notification notification = new Notification.BigTextStyle(builder).bigText(bigText).build();
-
-            NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(1, notification);
-
             Log.i("Encryption time", file.getName() + " (" + file.length() + " б) - " + time + " с");
         }
-    }*/
+    }
 
-    class EncryptTask extends AsyncTask<Object, Void, Void> {
+    /*class EncryptTask extends AsyncTask<Object, Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -207,6 +197,6 @@ public class BrowseFragment extends Fragment {
             return null;
         }
 
-    }
+    }*/
 
 }

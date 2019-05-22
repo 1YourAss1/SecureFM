@@ -11,6 +11,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,7 +89,41 @@ public class HomeFragment extends Fragment {
                 .show();
     }
 
-    class DecryptTask extends AsyncTask<Object, Void, Void> {
+    class DecryptTask extends AsyncTask<Object, Void, Object[]> {
+
+        @Override
+        protected void onPreExecute() {
+            Toast.makeText(getContext(), "Расшифрование началось", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected Object[] doInBackground(Object... args) {
+            File file = (File)args[0];
+            Encription encription = (Encription)args[1];
+            long start = System.currentTimeMillis();
+            encription.decryptFile(file, password);
+            long stop = System.currentTimeMillis();
+            double time = Double.valueOf(stop - start)/1000;
+            Object[] arr = new Object[2];
+            arr[0] = time;
+            arr[1] = file;
+            return arr;
+        }
+
+        @Override
+        protected void onPostExecute(Object[] result) {
+            Double time = (Double) result[0];
+            File file = (File) result[1];
+            String bigText = "Файл " + file.getName() + " (" + file.length() +" б) расшифрован за " + time + " с";
+            Toast.makeText(getContext(),
+                    bigText,
+                    Toast.LENGTH_SHORT).show();
+            Log.i("Encryption time", file.getName() + " (" + file.length() + " б) - " + time + " с");
+            fill(new File(getActivity().getSharedPreferences("PREFERENCE", Context.MODE_PRIVATE).getString("homeDir", "/storage")));
+        }
+    }
+
+    /*class DecryptTask extends AsyncTask<Object, Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -103,5 +138,5 @@ public class HomeFragment extends Fragment {
             return null;
         }
 
-    }
+    }*/
 }
