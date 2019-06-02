@@ -21,10 +21,15 @@
             app:layout_scrollFlags="scroll|enterAlways" />
     </android.support.design.widget.AppBarLayout>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Алгоритмы шифрования"/>
+
     <RadioGroup
-        android:id="@+id/radioGroup"
+        android:id="@+id/radioGroupAlgo"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="wrap_content" >
 
         <RadioButton
             android:id="@+id/radioButtonGOST28147"
@@ -37,6 +42,47 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="ГОСТ Р 34.12-2015" />
+    </RadioGroup>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Режимы шифрования"/>
+
+    <RadioGroup
+        android:id="@+id/radioGroupMode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <RadioButton
+            android:id="@+id/radioButtonECB"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ECB" />
+
+        <RadioButton
+            android:id="@+id/radioButtonCTR"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CTR" />
+
+        <RadioButton
+            android:id="@+id/radioButtonCBC"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CBC" />
+
+        <RadioButton
+            android:id="@+id/radioButtonOFB"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="OFB" />
+
+        <RadioButton
+            android:id="@+id/radioButtonCFB"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CFB" />
     </RadioGroup>
 
 </LinearLayout>

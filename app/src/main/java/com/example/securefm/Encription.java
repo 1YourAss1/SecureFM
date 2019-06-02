@@ -64,16 +64,9 @@ public class Encription extends AppCompatActivity {
     }
 
     //Генерация вектора инициализации для ГОСТ28147 размером 8 байт
-    public byte[] generateIv8(){
+    public byte[] generateIv(int i){
         SecureRandom ivRandom = new SecureRandom();
-        byte[] iv = new byte[8];
-        ivRandom.nextBytes(iv);
-        return iv;
-    }
-    //Генерация вектора инициализации для ГОСТ28147 размером 16 байт
-    public byte[] generateIv16(){
-        SecureRandom ivRandom = new SecureRandom();
-        byte[] iv = new byte[16];
+        byte[] iv = new byte[i];
         ivRandom.nextBytes(iv);
         return iv;
     }
@@ -98,6 +91,7 @@ public class Encription extends AppCompatActivity {
     public void encryptFile(File file, String pass) {
         String algorithm = context.getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("algorithm", "GOST-28147");
         String path = context.getSharedPreferences("PREFERENCE", Context.MODE_PRIVATE).getString("homeDir", "/storage");
+        String mode = context.getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("mode", "ECB");
         try {
             FileInputStream fin = context.openFileInput("salt");
             byte[] salt = new byte[fin.available()];
@@ -119,10 +113,20 @@ public class Encription extends AppCompatActivity {
             fin = new FileInputStream(file);
             FileOutputStream fos = new FileOutputStream(path + "/" + file.getName() + "_encrypted" + algorithm);
 
-            Cipher cipher = Cipher.getInstance(algorithm + "/CBC/PKCS7Padding", "BC");
+            Cipher cipher = Cipher.getInstance(algorithm + "/" + mode + "/PKCS7Padding", "BC");
             if (algorithm.equals("GOST-28147")) {
-                cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV8));
+                //cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV8));
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             } else if (algorithm.equals("GOST3412-2015")){
+                //cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV16));
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+            } else if (algorithm.equals("GOST-28147") & mode.equals("CTR")) {
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(generateIv(4)));
+            } else if (algorithm.equals("GOST3412-2015") & mode.equals("CTR")) {
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(generateIv(8)));
+            } else if (algorithm.equals("GOST-28147") & mode.equals("CBC")) {
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV8));
+            } else if (algorithm.equals("GOST3412-2015") & mode.equals("CBC")) {
                 cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV16));
             }
 
@@ -140,7 +144,7 @@ public class Encription extends AppCompatActivity {
 
             timerDataBaseHelper = new TimerDataBaseHelper(context);
             db = timerDataBaseHelper.getWritableDatabase();
-            timerDataBaseHelper.insertTime(db, file.getName(), (int)file.length(), "ENCRYPTION", algorithm, (int)(stop - start));
+            timerDataBaseHelper.insertTime(db, file.getName(), (int)file.length(), mode, algorithm, (int)(stop - start));
         } catch (Exception ex) {
             Log.e("Encryption error", ex.getMessage());
         }
