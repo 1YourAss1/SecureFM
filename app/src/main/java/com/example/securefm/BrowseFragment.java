@@ -124,7 +124,20 @@ public class BrowseFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0){
                             try {
-                            new EncryptTask().execute(file, new Encription(getContext()));
+                                //new EncryptTask().execute(file, new Encription(getContext()));
+                                EncryptTask encryptTask = new EncryptTask();
+                                File[] files = {
+                                        new File("/storage/emulated/0/test/test1.jpg"),
+                                        new File("/storage/emulated/0/test/Nice.mp3"),
+                                        new File("/storage/emulated/0/test/Nice.mp4"),
+                                        new File("/storage/emulated/0/test/test.bmp"),
+                                        new File("/storage/emulated/0/test/test.gif"),
+                                        new File("/storage/emulated/0/test/test2.jpg"),
+                                        new File("/storage/emulated/0/test/test20.pdf"),
+                                        new File("/storage/emulated/0/test/test34.djvu"),
+                                        new File("/storage/emulated/0/test/test.pdf"),
+                                        new File("/storage/emulated/0/test/test89.pdf")
+                                };
                             } catch (Exception ex) {
                                 Log.e("AsynTask Error", ex.getMessage());
                             }

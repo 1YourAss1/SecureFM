@@ -114,11 +114,9 @@ public class Encription extends AppCompatActivity {
             FileOutputStream fos = new FileOutputStream(path + "/" + file.getName() + "_encrypted" + algorithm);
 
             Cipher cipher = Cipher.getInstance(algorithm + "/" + mode + "/PKCS7Padding", "BC");
-            if (algorithm.equals("GOST-28147")) {
-                //cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV8));
+            if (algorithm.equals("GOST-28147") & (mode.equals("ECB") | mode.equals("OFB") | mode.equals("CFB")) ) {
                 cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-            } else if (algorithm.equals("GOST3412-2015")){
-                //cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV16));
+            } else if (algorithm.equals("GOST3412-2015") & (mode.equals("ECB") | mode.equals("OFB") | mode.equals("CFB"))){
                 cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             } else if (algorithm.equals("GOST-28147") & mode.equals("CTR")) {
                 cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(generateIv(4)));
