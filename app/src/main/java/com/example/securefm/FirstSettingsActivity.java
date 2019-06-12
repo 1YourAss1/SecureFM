@@ -43,6 +43,10 @@ public class FirstSettingsActivity extends AppCompatActivity {
                 FileOutputStream fos = openFileOutput("salt", Context.MODE_PRIVATE);
                 fos.write(new Encryption(getApplicationContext()).generateSalt());
                 fos.close();
+                //Создание и сохранение IV для ГОСТ 28147-89 в режиме CTR
+                fos = openFileOutput("IV4", Context.MODE_PRIVATE);
+                fos.write(new Encryption(getApplicationContext()).generateIv(4));
+                fos.close();
                 //Создание и сохранение IV для ГОСТ 28147-89
                 fos = openFileOutput("IV8", Context.MODE_PRIVATE);
                 fos.write(new Encryption(getApplicationContext()).generateIv(8));

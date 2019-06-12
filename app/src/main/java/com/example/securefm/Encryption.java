@@ -98,37 +98,60 @@ public class Encryption extends AppCompatActivity {
             fin.read(salt);
             fin.close();
 
-            fin = context.openFileInput("IV8");
-            byte[] IV8 = new byte[fin.available()];
-            fin.read(IV8);
-            fin.close();
-
-            fin = context.openFileInput("IV16");
-            byte[] IV16 = new byte[fin.available()];
-            fin.read(IV16);
-            fin.close();
-
             SecretKey secretKey = generateSecretKey(pass, salt, algorithm);
 
-            fin = new FileInputStream(file);
-            FileOutputStream fos = new FileOutputStream(path + "/" + file.getName() + "_encrypted" + algorithm);
+            Cipher cipher;
+            if (algorithm.equals("GOST-28147")) {
+                if (mode.equals("ECB")) {
+                    cipher = Cipher.getInstance(algorithm + "/" + mode + "/PKCS7Padding", "BC");
+                    cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+                } else if (mode.equals("CTR")) {
+                    cipher = Cipher.getInstance(algorithm + "/" + mode + "/NoPadding", "BC");
 
-            Cipher cipher = Cipher.getInstance(algorithm + "/" + mode + "/PKCS7Padding", "BC");
-            if (algorithm.equals("GOST-28147") & (mode.equals("ECB") | mode.equals("OFB") | mode.equals("CFB")) ) {
-                cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-            } else if (algorithm.equals("GOST3412-2015") & (mode.equals("ECB") | mode.equals("OFB") | mode.equals("CFB"))){
-                cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-            } else if (algorithm.equals("GOST-28147") & mode.equals("CTR")) {
-                cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(generateIv(4)));
-            } else if (algorithm.equals("GOST3412-2015") & mode.equals("CTR")) {
-                cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(generateIv(8)));
-            } else if (algorithm.equals("GOST-28147") & mode.equals("CBC")) {
-                cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV8));
-            } else if (algorithm.equals("GOST3412-2015") & mode.equals("CBC")) {
-                cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV16));
+                    fin = context.openFileInput("IV4");
+                    byte[] IV4 = new byte[fin.available()];
+                    fin.read(IV4);
+                    fin.close();
+
+                    cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV4));
+                } else {
+                    cipher = Cipher.getInstance(algorithm + "/" + mode + "/PKCS7Padding", "BC");
+
+                    fin = context.openFileInput("IV8");
+                    byte[] IV8 = new byte[fin.available()];
+                    fin.read(IV8);
+                    fin.close();
+
+                    cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV8));
+                }
+            } else {
+                if (mode.equals("ECB")) {
+                    cipher = Cipher.getInstance(algorithm + "/" + mode + "/PKCS7Padding", "BC");
+                    cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+                } else if (mode.equals("CTR")) {
+                    cipher = Cipher.getInstance(algorithm + "/SIC/NoPadding", "BC");
+
+                    fin = context.openFileInput("IV8");
+                    byte[] IV8 = new byte[fin.available()];
+                    fin.read(IV8);
+                    fin.close();
+
+                    cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV8));
+                } else {
+                    cipher = Cipher.getInstance(algorithm + "/" + mode + "/PKCS7Padding", "BC");
+
+                    fin = context.openFileInput("IV16");
+                    byte[] IV16 = new byte[fin.available()];
+                    fin.read(IV16);
+                    fin.close();
+
+                    cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV16));
+                }
             }
 
+            FileOutputStream fos = new FileOutputStream(path + "/" + file.getName() + "_encrypted" + algorithm);
             CipherOutputStream cos = new CipherOutputStream(fos, cipher);
+            fin = new FileInputStream(file);
             int  b;
             byte[] d = new byte[128*1024];
             long start = System.currentTimeMillis();
@@ -143,42 +166,76 @@ public class Encryption extends AppCompatActivity {
             timerDataBaseHelper = new TimerDataBaseHelper(context);
             db = timerDataBaseHelper.getWritableDatabase();
             timerDataBaseHelper.insertTime(db, file.getName(), (int)file.length(), mode, algorithm, (int)(stop - start));
+            Log.i("Encryption time with", algorithm + "/" + mode + ": " +
+                    file.getName() + " (" + file.length() + " б) - " + (int)(stop - start) + " с");
         } catch (Exception ex) {
-            Log.e("Encryption error", ex.getMessage());
+            Log.e("Encryption error", algorithm + "/" + mode + ": " + ex.getMessage());
         }
     }
 
     public void decryptFile(File file, String pass) {
         String algorithm = context.getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("algorithm", "GOST-28147");
         String path = context.getSharedPreferences("PREFERENCE", Context.MODE_PRIVATE).getString("homeDir", "/storage");
+        String mode = context.getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("mode", "ECB");
         try {
             FileInputStream fin = context.openFileInput("salt");
             byte[] salt = new byte[fin.available()];
             fin.read(salt);
             fin.close();
 
-            fin = context.openFileInput("IV8");
-            byte[] IV8 = new byte[fin.available()];
-            fin.read(IV8);
-            fin.close();
-
-            fin = context.openFileInput("IV16");
-            byte[] IV16 = new byte[fin.available()];
-            fin.read(IV16);
-            fin.close();
-
             SecretKey secretKey = generateSecretKey(pass, salt, algorithm);
+
+            Cipher cipher;
+            if (algorithm.equals("GOST-28147")) {
+                if (mode.equals("ECB")) {
+                    cipher = Cipher.getInstance(algorithm + "/" + mode + "/PKCS7Padding", "BC");
+                    cipher.init(Cipher.DECRYPT_MODE, secretKey);
+                } else if (mode.equals("CTR")) {
+                    cipher = Cipher.getInstance(algorithm + "/" + mode + "/NoPadding", "BC");
+
+                    fin = context.openFileInput("IV4");
+                    byte[] IV4 = new byte[fin.available()];
+                    fin.read(IV4);
+                    fin.close();
+
+                    cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(IV4));
+                } else {
+                    cipher = Cipher.getInstance(algorithm + "/" + mode + "/PKCS7Padding", "BC");
+
+                    fin = context.openFileInput("IV8");
+                    byte[] IV8 = new byte[fin.available()];
+                    fin.read(IV8);
+                    fin.close();
+
+                    cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(IV8));
+                }
+            } else {
+                if (mode.equals("ECB")) {
+                    cipher = Cipher.getInstance(algorithm + "/" + mode + "/PKCS7Padding", "BC");
+                    cipher.init(Cipher.DECRYPT_MODE, secretKey);
+                } else if (mode.equals("CTR")) {
+                    cipher = Cipher.getInstance(algorithm + "/SIC/NoPadding", "BC");
+
+                    fin = context.openFileInput("IV8");
+                    byte[] IV8 = new byte[fin.available()];
+                    fin.read(IV8);
+                    fin.close();
+
+                    cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(IV8));
+                } else {
+                    cipher = Cipher.getInstance(algorithm + "/" + mode + "/PKCS7Padding", "BC");
+
+                    fin = context.openFileInput("IV16");
+                    byte[] IV16 = new byte[fin.available()];
+                    fin.read(IV16);
+                    fin.close();
+
+                    cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(IV16));
+                }
+            }
 
             fin = new FileInputStream(file);
             FileOutputStream fos = new FileOutputStream(path + "/" + file.getName() + "_decrypted" + algorithm);
-
-            Cipher cipher = Cipher.getInstance(algorithm + "/CBC/PKCS7Padding", "BC");
-            if (algorithm.equals("GOST-28147")) {
-                cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(IV8));
-            } else if (algorithm.equals("GOST3412-2015")){
-                cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(IV16));
-            }
-
             CipherOutputStream cos = new CipherOutputStream(fos, cipher);
             int  b;
             byte[] d = new byte[128*1024];
