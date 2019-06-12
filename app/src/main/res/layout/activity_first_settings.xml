@@ -57,7 +57,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="16dp"
-        android:text="Создать"
+        android:text="Сохранить"
         android:onClick="onCreatePassword"/>
 
 </LinearLayout>

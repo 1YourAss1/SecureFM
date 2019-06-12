@@ -1,7 +1,6 @@
 package com.example.securefm;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -27,7 +26,7 @@ public class LoginActivity extends AppCompatActivity {
         EditText passText = findViewById(R.id.passText);
         String digest = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getString("hashPass", "");
         //Проверка пароля по хешу
-        if (digest.equals(new Encription(getApplicationContext()).GetDigest(passText.getText().toString().getBytes()).toString())) {
+        if (digest.equals(new Encryption(getApplicationContext()).GetDigest(passText.getText().toString().getBytes()).toString())) {
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra("PASSWORD", passText.getText().toString());
             startActivity(intent);

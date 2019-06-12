@@ -72,13 +72,5 @@ public class MainActivity extends AppCompatActivity {
 
     //Обработка "назад"
     @Override
-    public void onBackPressed() {
-        /*int cont = getSupportFragmentManager().getBackStackEntryCount();
-        if (cont == 0) {
-            super.onBackPressed();
-        } else {
-            getSupportFragmentManager().popBackStack();
-        }*/
-    }
-
+    public void onBackPressed() {}
 }

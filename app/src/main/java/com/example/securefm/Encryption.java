@@ -32,9 +32,9 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
-public class Encription extends AppCompatActivity {
+public class Encryption extends AppCompatActivity {
     private Context context;
-    Encription(Context context) {
+    Encryption(Context context) {
         this.context = context;
     }
 
@@ -63,7 +63,7 @@ public class Encription extends AppCompatActivity {
         return salt;
     }
 
-    //Генерация вектора инициализации для ГОСТ28147 размером 8 байт
+    //Генерация вектора инициализации для "Магма"/"Кузнечик" размером 8/16 байт
     public byte[] generateIv(int i){
         SecureRandom ivRandom = new SecureRandom();
         byte[] iv = new byte[i];

@@ -2,8 +2,6 @@ package com.example.securefm;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -78,7 +76,7 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0){
-                            new DecryptTask().execute(file, new Encription(getContext()));
+                            new DecryptTask().execute(file, new Encryption(getContext()));
                         } else if (which == 1){
                             file.delete();
                             fill(new File(getActivity().getSharedPreferences("PREFERENCE", Context.MODE_PRIVATE).getString("homeDir", "/storage")));
@@ -99,9 +97,9 @@ public class HomeFragment extends Fragment {
         @Override
         protected Object[] doInBackground(Object... args) {
             File file = (File)args[0];
-            Encription encription = (Encription)args[1];
+            Encryption encryption = (Encryption)args[1];
             long start = System.currentTimeMillis();
-            encription.decryptFile(file, password);
+            encryption.decryptFile(file, password);
             long stop = System.currentTimeMillis();
             double time = Double.valueOf(stop - start)/1000;
             Object[] arr = new Object[2];
@@ -133,7 +131,7 @@ public class HomeFragment extends Fragment {
         @Override
         protected Void doInBackground(Object... args) {
             File file = (File)args[0];
-            Encription encription = (Encription)args[1];
+            Encryption encription = (Encryption)args[1];
             encription.decryptFile(file, password);
             return null;
         }

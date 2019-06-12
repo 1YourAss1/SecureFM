@@ -1,14 +1,9 @@
 package com.example.securefm;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -82,15 +77,6 @@ public class BrowseFragment extends Fragment {
             recyclerAdapter = new BrowseRecyclerViewAdapter(directoryEntries, currentDirectory, this);
             recyclerView.setAdapter(recyclerAdapter);
             setTitle(currentDirectory.getAbsolutePath());
-        } else {
-            try {
-                //Intent i = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("file://" + aDirectory.getAbsolutePath()));
-                //Intent i = new Intent(android.content.Intent.ACTION_VIEW, Uri.fromFile(aDirectory));
-                //startActivity(i);
-                Toast.makeText(getActivity(), "Открывать мока можно только на <7 Android", Toast.LENGTH_SHORT).show();
-            } catch (Exception ex) {
-                Log.e("Intent Error", ex.getMessage());
-            }
         }
     }
 
@@ -124,8 +110,8 @@ public class BrowseFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0){
                             try {
-                                //new EncryptTask().execute(file, new Encription(getContext()));
-                                EncryptTask encryptTask = new EncryptTask();
+                                new EncryptTask().execute(file, new Encryption(getContext()));
+                                /*Encryption encription = new Encryption(getContext());
                                 File[] files = {
                                         new File("/storage/emulated/0/test/test1.jpg"),
                                         new File("/storage/emulated/0/test/Nice.mp3"),
@@ -138,20 +124,26 @@ public class BrowseFragment extends Fragment {
                                         new File("/storage/emulated/0/test/test.pdf"),
                                         new File("/storage/emulated/0/test/test89.pdf")
                                 };
+                                String[] modes = {
+                                        "ECB",
+                                        "CTR",
+                                        "CBC",
+                                        "OFB",
+                                        "CFB"
+                                };
+                                for (String mode: modes) {
+                                    Log.i("Encryption mode", mode);
+                                    for (File filek: files) {
+                                        long start = System.currentTimeMillis();
+                                        encription.encryptFile(filek, password, mode);
+                                        long stop = System.currentTimeMillis();
+                                        double time = Double.valueOf(stop - start)/1000;
+                                        Log.i("Encryption time", filek.getName() + " (" + filek.length() + " б) - " + time + " с");
+                                    }
+                                }*/
                             } catch (Exception ex) {
                                 Log.e("AsynTask Error", ex.getMessage());
                             }
-                            /*long start = System.currentTimeMillis();
-                            new Encription().encryptFile(
-                                    file,
-                                    password,
-                                    getActivity().getSharedPreferences("PREFERENCE", Context.MODE_PRIVATE).getString("homeDir", "/storage"),
-                                    getContext());
-                            long stop = System.currentTimeMillis();
-                            double time = Double.valueOf(stop - start)/1000;*/
-                            //browseTo(currentDirectory);
-                            //Toast.makeText(getActivity(), "Файл успешно зашифрован за " + time + " с", Toast.LENGTH_SHORT).show();
-                            //Log.i("Encryption Time for " + file.getName(), String.valueOf(stop - start) + " ms");
                         } else if (which == 1){
                             file.delete();
                             browseTo(currentDirectory);
@@ -166,15 +158,16 @@ public class BrowseFragment extends Fragment {
 
         @Override
         protected void onPreExecute() {
+
             Toast.makeText(getContext(), "Шифрование началось", Toast.LENGTH_SHORT).show();
         }
 
         @Override
         protected Object[] doInBackground(Object... args) {
             File file = (File)args[0];
-            Encription encription = (Encription)args[1];
+            Encryption encryption = (Encryption)args[1];
             long start = System.currentTimeMillis();
-            encription.encryptFile(file, password);
+            encryption.encryptFile(file, password);
             long stop = System.currentTimeMillis();
             double time = Double.valueOf(stop - start)/1000;
             Object[] arr = new Object[2];
@@ -205,7 +198,7 @@ public class BrowseFragment extends Fragment {
         @Override
         protected Void doInBackground(Object... args) {
             File file = (File)args[0];
-            Encription encription = (Encription)args[1];
+            Encryption encription = (Encryption)args[1];
             encription.encryptFile(file, password);
             return null;
         }
