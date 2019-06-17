@@ -35,13 +35,13 @@
             android:id="@+id/radioButtonGOST28147"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ГОСТ 28147-89" />
+            android:text="Магма" />
 
         <RadioButton
             android:id="@+id/radioButtonGOST3412-2015"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ГОСТ Р 34.12-2015" />
+            android:text="Кузнечик" />
     </RadioGroup>
 
     <TextView

@@ -131,16 +131,16 @@ public class BrowseFragment extends Fragment {
                                         "OFB",
                                         "CFB"
                                 };
-                                for (String mode: modes) {
-                                    Log.i("Encryption mode", mode);
+                                //for (String mode: modes) {
+                                    //Log.i("Encryption mode", mode);
                                     for (File filek: files) {
                                         long start = System.currentTimeMillis();
-                                        encription.encryptFile(filek, password, mode);
+                                        encription.encryptFile(filek, password, "CTR");
                                         long stop = System.currentTimeMillis();
                                         double time = Double.valueOf(stop - start)/1000;
                                         Log.i("Encryption time", filek.getName() + " (" + filek.length() + " б) - " + time + " с");
                                     }
-                                }*/
+                                //}*/
                             } catch (Exception ex) {
                                 Log.e("AsynTask Error", ex.getMessage());
                             }

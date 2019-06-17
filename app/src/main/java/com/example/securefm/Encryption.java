@@ -167,7 +167,7 @@ public class Encryption extends AppCompatActivity {
             db = timerDataBaseHelper.getWritableDatabase();
             timerDataBaseHelper.insertTime(db, file.getName(), (int)file.length(), mode, algorithm, (int)(stop - start));
             Log.i("Encryption time with", algorithm + "/" + mode + ": " +
-                    file.getName() + " (" + file.length() + " б) - " + (int)(stop - start) + " с");
+                    file.getName() + " (" + file.length() + " б) - " + (double)(stop - start)/10 + " мс");
         } catch (Exception ex) {
             Log.e("Encryption error", algorithm + "/" + mode + ": " + ex.getMessage());
         }

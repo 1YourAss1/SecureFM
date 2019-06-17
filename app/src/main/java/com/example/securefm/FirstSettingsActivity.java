@@ -56,8 +56,6 @@ public class FirstSettingsActivity extends AppCompatActivity {
                 fos.write(new Encryption(getApplicationContext()).generateIv(16));
                 fos.close();
 
-
-                //getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit().putString("homeDir", "/storage").commit();
                 getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit().putBoolean("isFirstRun", false).commit();
 
                 if (isFirstRun) {
