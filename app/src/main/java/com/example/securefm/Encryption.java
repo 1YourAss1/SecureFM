@@ -77,7 +77,7 @@ public class Encryption extends AppCompatActivity {
         try {
             char[] passwordChar = passwordString.toCharArray();
             PBEKeySpec pbKeySpec = new PBEKeySpec(passwordChar, salt, 1324, 256);
-            SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHMacGOST3411");
             byte[] keyBytes = secretKeyFactory.generateSecret(pbKeySpec).getEncoded();
             Security.addProvider(new BouncyCastleProvider());
             keySpec = new SecretKeySpec(keyBytes, algorithm);
